@@ -24,10 +24,13 @@ zero writes; first-time ops need a new approved plan again.
 Means a provider stored something different from what was sent. Inspect `calsync status` / the report, compare
 the two items, fix the cause (usually a feature the provider rewrites), then remove `/data/state/BLOCK_<pair>`.
 
-## Empty mirror side
-The local read-only vdirsyncer mirror refuses a storage that becomes completely empty ("was completely emptied");
-the pair then reports an error. Move the stale mirror directory and its status (`/data/status/mirror/m_<pair>_a*`)
-aside instead of forcing deletion.
+## Local mirror rollback and automatic recovery
+
+The local vdirsyncer mirror is read-only with respect to the providers. It identifies local files by modification time and inode. A plain copy during rollback can change these identities, causing a stale status to appear as a local edit and trigger a rejected write to the read-only provider.
+
+The runner preserves file identities during rollback, scopes status restoration to the affected pair, and automatically rebuilds an affected side in isolated staging when exact restoration is not possible. Staging is kept on the same volume, outside the backup set (`/data/backups/mirror-scratch`). A failed or suspiciously incomplete read leaves the previous mirror intact. Zero-resource and mass-deletion guards still apply, and the recovery never writes to the providers.
+
+The marker `/data/state/mirror_rebuild_<pair>.json` tracks pending recovery. Manual removal of vdirsyncer status files should no longer be necessary. Review the health status if automatic recovery fails.
 
 ## Restore drill
 `scripts/restore-drill.sh <archive.age> <identity>`; restore into production only with the service paused.

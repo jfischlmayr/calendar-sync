@@ -51,18 +51,22 @@ def _tcal(name: str, url: str, read_only: bool) -> str:
     return (f"[storage {name}]\ntype = \"caldav\"\nurl = {q(url)}\nusername = \"test\"\npassword = \"test\"\n{ro}\n")
 
 
-def mirror_conf(p: Pair, s: Settings, side: str) -> str:
+def mirror_conf(p: Pair, s: Settings, side: str, mirror_root: Path | None = None,
+                status_root: Path | None = None) -> tuple[str, str]:
     """Remote (read_only) -> local filesystem mirror. Never writes to the remote:
-    the remote storage is read_only and partial_sync=error aborts otherwise."""
+    the remote storage is read_only and partial_sync=error aborts otherwise.
+    mirror_root/status_root (default: the live s.mirror/<pair> and s.status/mirror) let the runner
+    build a fresh mirror in scratch staging without touching the live one."""
     assert side in ("a", "b")
-    mdir = s.mirror / p.name / side
+    mdir = (mirror_root or (s.mirror / p.name)) / side
+    status_path = status_root or (s.status / "mirror")
     mdir.mkdir(parents=True, exist_ok=True)
     pair = f"m_{p.name}_{side}"
     remote = f"remote_{side}"
     tu = _test_urls()
     if tu:
         return (
-            f"[general]\nstatus_path = {q(str(s.status / 'mirror'))}\n\n"
+            f"[general]\nstatus_path = {q(str(status_path))}\n\n"
             f"[pair {pair}]\na = {q(remote)}\nb = \"local\"\ncollections = null\n"
             f"conflict_resolution = null\npartial_sync = \"error\"\n\n"
             f"{_tcal(remote, tu[0] if side == 'a' else tu[1], True)}{_fs('local', mdir)}"
@@ -70,7 +74,7 @@ def mirror_conf(p: Pair, s: Settings, side: str) -> str:
     rem = _icloud(remote, p, s, True) if side == "a" else _google(remote, s, True)
     cid = p.icloud_collection if side == "a" else p.google_collection
     return (
-        f"[general]\nstatus_path = {q(str(s.status / 'mirror'))}\n\n"
+        f"[general]\nstatus_path = {q(str(status_path))}\n\n"
         f"[pair {pair}]\na = {q(remote)}\nb = \"local\"\n"
         f"collections = [[\"{p.name}\", {q(cid)}, \"{side}\"]]\n"
         f"conflict_resolution = null\npartial_sync = \"error\"\n\n"

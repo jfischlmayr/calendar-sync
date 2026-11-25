@@ -13,7 +13,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from . import alert as alertmod
-from . import health, ics, syncrun, vdsconf
+from . import health, ics, mirrorsafe, syncrun, vdsconf
 from .config import Pair, Settings
 from .store import AuthError
 from .util import Blocked, log, now, read_json, redact, write_json
@@ -61,13 +61,80 @@ def vds(s: Settings, conf: str, *args: str) -> tuple[int, str]:
         cfg.unlink(missing_ok=True)
 
 
-def _mirror(s: Settings, p: Pair, side: str) -> None:
+class StaleMirrorStatus(RuntimeError):
+    """vdirsyncer wanted to write the READ-ONLY remote because the local mirror no longer matches its
+    status (PartialSync). The remote was not written; the status is untrustworthy -> rebuild the side."""
+
+    def __init__(self, side: str, msg: str):
+        super().__init__(msg)
+        self.side = side
+
+
+def _is_partial_sync(out: str) -> bool:
+    return "Attempted change on" in out and "read-only" in out
+
+
+def _sync_side(s: Settings, p: Pair, side: str) -> None:
     conf, pair = vdsconf.mirror_conf(p, s, side)
     rc, out = vds(s, conf, "discover", pair)
     if rc == 0:
         rc, out = vds(s, conf, "sync", pair)
     if rc != 0:
-        raise RuntimeError(f"mirror {p.name}/{side} failed: {out.strip()[-600:]}")
+        msg = f"mirror {p.name}/{side} failed: {out.strip()[-600:]}"
+        if _is_partial_sync(out):
+            raise StaleMirrorStatus(side, msg)
+        raise RuntimeError(msg)
+
+
+def _mirror(s: Settings, p: Pair, side: str) -> None:
+    _sync_side(s, p, side)
+
+
+def _rebuild_side(s: Settings, p: Pair, side: str) -> dict:
+    """Fresh READ-ONLY fetch of one remote into scratch staging (own empty status), then atomic publish.
+    The live mirror/status stay untouched unless the staged read is complete and passes the deletion guard;
+    on any failure they are kept as they were. Not run on a normal cycle (only after a rollback that could
+    not be proven exact, or after PartialSync)."""
+    sc = mirrorsafe.scratch(s)
+    stage = sc / f"rebuild-{p.name}-{side}"
+    shutil.rmtree(stage, ignore_errors=True)
+    stage.mkdir(parents=True)
+    live_side = s.mirror / p.name / side
+    live_side.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        if not mirrorsafe.same_fs(stage, live_side.parent):
+            raise RuntimeError("scratch is not on the mirror filesystem; refusing a non-atomic publish")
+        mroot, sroot = stage / "mirror" / p.name, stage / "status"
+        conf, pair = vdsconf.mirror_conf(p, s, side, mirror_root=mroot, status_root=sroot)
+        rc, out = vds(s, conf, "discover", pair)
+        if rc == 0:
+            rc, out = vds(s, conf, "sync", pair)
+        if rc != 0:
+            raise RuntimeError(f"mirror rebuild {p.name}/{side} failed, previous mirror kept: {out.strip()[-500:]}")
+        new_uids, old_uids = ics.uid_set(mroot / side), ics.uid_set(live_side) if live_side.exists() else set()
+        ack = read_json(s.state / f"ack_deletes_{p.name}.json", {})
+        extra = ack.get("max", 0) if ack.get("expires", 0) > now() else 0
+        vanished = len(old_uids - new_uids)
+        if old_uids and not new_uids and not extra:
+            raise Blocked(f"mirror rebuild {p.name}/{side}: remote returned ZERO items but {len(old_uids)} are mirrored: treating as outage, mirror kept")
+        limit = max(s.max_delete_abs, int(len(old_uids) * s.max_delete_pct / 100))
+        if vanished > limit + extra:
+            raise Blocked(f"mirror rebuild {p.name}/{side}: {vanished} items vanished (limit {limit}), mirror kept; "
+                          "acknowledge with `calsync ack-deletes` after checking the provider")
+        mirrorsafe.publish_side(s, p, side, mroot / side, sroot)
+        mirrorsafe.clear_rebuild(s, p, side)
+        return {"items": len(new_uids), "vanished": vanished, "added": len(new_uids - old_uids)}
+    finally:
+        shutil.rmtree(stage, ignore_errors=True)
+
+
+def _heal_pending(s: Settings, p: Pair, res: dict) -> None:
+    mirrorsafe.recover_swaps(s, p)
+    for side in mirrorsafe.SIDES:
+        if side in mirrorsafe.pending_rebuild(s, p):
+            r = _rebuild_side(s, p, side)
+            res.setdefault("mirror_rebuilt", {})[side] = r
+            log.warning("mirror %s/%s rebuilt from remote (read-only): %s", p.name, side, r)
 
 
 def uids(s: Settings, p: Pair, side: str) -> set[str]:
@@ -97,21 +164,20 @@ def export_collection(s: Settings, side: str, collection: str, out_dir: Path) ->
 
 # ---- one pair ---------------------------------------------------------------
 
-def _snapshot(s: Settings, p: Pair) -> Path:
-    snap = s.run_dir / f"snap-{p.name}"
-    shutil.rmtree(snap, ignore_errors=True)
-    snap.mkdir(parents=True)
-    for what, src in (("mirror", s.mirror / p.name), ("status", s.status / "mirror")):
-        if src.exists():
-            shutil.copytree(src, snap / what)
-    return snap
-
-
-def _rollback(s: Settings, p: Pair, snap: Path) -> None:
-    for what, dst in (("mirror", s.mirror / p.name), ("status", s.status / "mirror")):
-        if (snap / what).exists():
-            shutil.rmtree(dst, ignore_errors=True)
-            shutil.copytree(snap / what, dst)
+def _rollback(s: Settings, p: Pair, snap) -> None:
+    """Scoped restore of this pair only. Never raises: if the restore fails or cannot be proven exact the
+    pair's sides are marked rebuild-pending instead (the next run rebuilds them from the remote)."""
+    if snap is None:
+        return
+    try:
+        mirrorsafe.rollback(s, p, snap)
+    except Exception as e:
+        log.error("rollback of %s failed (%s); sides marked for rebuild", p.name, redact(str(e))[:200])
+        for side in mirrorsafe.SIDES:
+            try:
+                mirrorsafe.mark_rebuild(s, p, side, f"rollback failed: {type(e).__name__}")
+            except Exception:
+                pass
 
 
 def _maybe_audit(s: Settings, p: Pair, res: dict) -> None:
@@ -136,14 +202,16 @@ def _maybe_audit(s: Settings, p: Pair, res: dict) -> None:
             alertmod.alert(s, f"auth_{p.name}", f"AUTH FAILURE {p.name}", msg)
 
 
-def run_pair(s: Settings, p: Pair) -> dict:
+def run_pair(s: Settings, p: Pair, _healed: bool = False) -> dict:
     ps = s.state / f"pair_{p.name}.json"
     st = read_json(ps, {"failures": 0, "next_allowed": 0})
-    if now() < st["next_allowed"]:
+    if now() < st["next_allowed"] and not _healed:
         return {"skipped": "rate-limit/backoff"}
-    snap = _snapshot(s, p)
+    snap = None
     res: dict = {"mode": p.mode}
     try:
+        _heal_pending(s, p, res)                    # own atomic publishes, outside the snapshot/rollback window
+        snap = mirrorsafe.snapshot(s, p)
         _mirror(s, p, "a")
         _mirror(s, p, "b")
         cur = {"a": uids(s, p, "a"), "b": uids(s, p, "b")}
@@ -166,6 +234,22 @@ def run_pair(s: Settings, p: Pair) -> dict:
         health.update(s, p.name, last_success=now(), blocked=None, last_error=None, **res)
         alertmod.alert(s, f"fail_{p.name}", p.name, "sync healthy again", recovery=True)
         return res
+    except StaleMirrorStatus as e:
+        _rollback(s, p, snap)
+        mirrorsafe.mark_rebuild(s, p, e.side, "PartialSync: local mirror no longer matches vdirsyncer status")
+        if not _healed:                             # one immediate, bounded self-heal attempt (read-only rebuild)
+            mirrorsafe.discard(snap)
+            snap = None
+            return run_pair(s, p, _healed=True)
+        st["failures"] += 1
+        st["next_allowed"] = max(st["next_allowed"], now() + min(s.max_backoff_s, s.interval_s * 2 ** min(st["failures"], 6)))
+        write_json(ps, st)
+        msg = redact(str(e))
+        health.update(s, p.name, last_error=msg, failures=st["failures"], last_attempt=now())
+        log.error("FAILED %s: %s", p.name, msg)
+        if st["failures"] >= s.alert_after_failures:
+            alertmod.alert(s, f"fail_{p.name}", f"sync FAILING {p.name} ({st['failures']}x)", msg)
+        return {"error": msg}
     except Blocked as e:
         _rollback(s, p, snap)
         st["failures"] += 1
@@ -196,7 +280,7 @@ def run_pair(s: Settings, p: Pair) -> dict:
             alertmod.alert(s, f"fail_{p.name}", f"sync FAILING {p.name} ({st['failures']}x)", msg)
         return {"error": msg}
     finally:
-        shutil.rmtree(snap, ignore_errors=True)
+        mirrorsafe.discard(snap)
 
 
 def run_cycle(s: Settings, only: str | None = None) -> dict:
