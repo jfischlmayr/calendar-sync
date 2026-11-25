@@ -12,7 +12,7 @@ if [ "${CALSYNC_REQUIRE_PERSISTENT:-1}" = "1" ] && ! grep -q ' /data ' /proc/sel
 fi
 
 active=0
-if [ -f "${CALSYNC_CONFIG:-/config/calsync.toml}" ] && grep -Eq '^\s*mode\s*=\s*"(mirror|seed|live)"' "${CALSYNC_CONFIG:-/config/calsync.toml}"; then active=1; fi
+if [ -f "${CALSYNC_CONFIG:-/config/calsync.toml}" ] && grep -Eq '^\s*mode\s*=\s*"(mirror|seed|seed_a|live)"' "${CALSYNC_CONFIG:-/config/calsync.toml}"; then active=1; fi
 if [ "$active" = 1 ]; then
   for v in ICLOUD_USER ICLOUD_APP_PASSWORD GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET; do
     eval "val=\${$v:-}"; eval "f=\${${v}_FILE:-}"

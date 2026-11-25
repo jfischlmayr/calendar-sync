@@ -424,7 +424,11 @@ FAKE_RCLONE = """#!@PY@
 import json, os, shutil, sys
 root = os.environ["FAKE_RCLONE_ROOT"]
 def loc(p):
-    return os.path.join(root, p.split(":", 1)[1]) if p.startswith("fake:") else p
+    if p.startswith("fake:"):
+        return os.path.join(root, p.split(":", 1)[1])
+    if p.startswith(":"):
+        return os.path.join(root, "inline-remote", p.rsplit(":", 1)[1].lstrip("/"))
+    return p
 a = sys.argv[1:]
 cmd = a[0]
 if cmd == "copyto":

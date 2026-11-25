@@ -8,10 +8,16 @@ Generate an age key pair on a trusted workstation *outside* the service host. Ke
 
 Configure a durable off-host location (e.g. an S3-compatible object store, a NAS remote or another independent storage service) via an rclone remote; use secret-marked environment settings for any keys. Avoid relying only on a local mount or same filesystem; the system deliberately treats off-host proof as a write prerequisite.
 
-Example read-only backup commands inside a configured container:
+For the supplied Compose configuration, use the rclone remote name `offsite` (for example, set
+`CALSYNC_BACKUP_REMOTE=offsite:calendar-backups/path`, `RCLONE_CONFIG_OFFSITE_TYPE=s3` and the corresponding
+provider, endpoint and credentials in your untracked `.env` or secret store). The alternative
+`CALSYNC_BACKUP_LOCAL_DIR` requires explicitly passing the environment variable and mounting an independent
+backup destination into a custom deployment; it is not configured in the supplied Compose file.
+
+Example backup commands inside a configured container (no calendar writes):
 ```sh
 python -m calsync.backup create
-python -m calsync.backup upload
+python -m calsync.backup upload --require-offhost
 ```
 Do not enable writes just because an archive exists. Confirm successful remote upload and restore drill from **downloaded off-host copy**. See `python -m calsync.backup --help` for exact options.
 
@@ -31,9 +37,10 @@ You may additionally pull the encrypted archives (`python -m calsync.backup crea
 tooling (for example `docker cp` or an `rclone` remote), as long as only the public age recipient is on the server. The
 repository does not ship host-specific pull timers.
 
-## Existing local QA
+## Test coverage
 
-The included synthetic restore test reported `DRILL OK` for a small fixture with 4 UIDs and 4 events; its simulated remote was on the same filesystem (not disaster-proof). This tests the backup code but does **not** prove a real off-host backup of your own calendars exists.
+The synthetic restore tests exercise backup and restore without accessing real calendars. Passing them does
+not prove that your own off-host backup exists or can be restored.
 
 ## Monitoring
 

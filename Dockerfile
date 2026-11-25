@@ -16,7 +16,9 @@ COPY config/calsync.example.toml /config/calsync.toml
 COPY LICENSE docs/THIRD-PARTY-LICENSES.md /usr/share/doc/calsync/
 COPY scripts/entrypoint.sh scripts/restore-drill.sh /app/scripts/
 # source/config must be readable by the non-root user regardless of the build context's file modes
-RUN chmod 0755 /app/scripts/*.sh && chmod -R a+rX,go-w /app /config /usr/share/doc/calsync
+RUN chmod 0755 /app/scripts/*.sh && chmod -R a+rX,go-w /app /config /usr/share/doc/calsync \
+    && chown calsync:calsync /config /config/calsync.toml \
+    && chmod 0700 /config && chmod 0600 /config/calsync.toml
 USER calsync
 WORKDIR /app
 VOLUME ["/data"]

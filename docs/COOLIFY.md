@@ -4,7 +4,7 @@
 
 ## Recommended setup
 
-Use a **private** source repository (or a private image in a trusted registry), deploy from `compose.yaml`, and keep
+Deploy from this source repository (or your own copy) using `compose.yaml`, and keep
 all environment variables in the platform's secret store. Never put credential values in `compose.yaml` or Git. The
 build uses a pinned base image and the dependency lock `requirements.lock`.
 

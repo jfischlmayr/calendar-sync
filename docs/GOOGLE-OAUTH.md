@@ -20,8 +20,15 @@ Run `scripts/google-oauth-local.sh /secure/local/path/google.json` **on a workst
 variables set. It performs calendar discovery with vdirsyncer into a throw-away directory and writes the token file with
 mode 600. Do not paste tokens into chats, issues, logs or shell history.
 
-Place the token only in the persistent data volume at `/data/tokens/google.json` (owner UID 10001, mode 600, with
-`/data/tokens` mode 700). Check that refresh still works after a container restart (`calsync auth-status`).
+While the Compose container is running inert (all pairs disabled), transfer the token directly as the service user:
+
+```sh
+docker compose exec -T calsync sh -c 'umask 077; mkdir -p /data/tokens; chmod 700 /data/tokens; cat > /data/tokens/.google.json.tmp && mv /data/tokens/.google.json.tmp /data/tokens/google.json' < /secure/local/path/google.json
+```
+
+This keeps the token at `/data/tokens/google.json` (owner UID 10001, mode 600, directory mode 700).
+Do not use a root-owned copy. Only then enable a mirror pair. Check that refresh still works after a
+container restart (`calsync auth-status`).
 
 Until both providers authenticate and read-only exports match the expected calendars, do not enable writes.
 
@@ -40,4 +47,4 @@ audits stop until a new token is created.
 * `calsync auth-status` prints expiry data without secrets (`refresh_token_expires_hint` when known).
 * Token refresh is done by `calsync.gauth.GoogleTokenSource`: atomic 0600 rewrite that keeps the refresh token and unknown
   keys, re-reads the file before refreshing (vdirsyncer shares it) and never logs token values.
-* Token files are excluded from off-host backups on purpose: a restored token may already be expired or revoked.
+* The built-in backup includes token files in the age-encrypted archive. Protect the archive and private decryption identity accordingly; a restored token may already be expired or revoked.

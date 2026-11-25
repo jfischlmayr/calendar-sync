@@ -6,7 +6,7 @@ first steps with a throw-away or test calendar pair if you can.
 ## 1. Install and run the tests (no accounts needed)
 
 ```sh
-git clone <your-copy-of-this-repository> calsync && cd calsync
+git clone https://github.com/jfischlmayr/calendar-sync.git calsync && cd calsync
 python3 -m venv .venv-test
 .venv-test/bin/pip install -r requirements.lock radicale pytest
 scripts/test.sh                                # synthetic data + local Radicale only
@@ -31,9 +31,16 @@ mkdir -p ~/calsync-local && cp config/calsync.example.toml ~/calsync-local/calsy
 Edit the copy outside the repository: set `self_addresses` (**all** your own addresses on both providers)
 and your pairs. Pairs stay `mode = "disabled"` until you change them.
 
-After step 4 has created the container, copy the edited file into the `/config` volume
-(`docker compose cp ~/calsync-local/calsync.toml calsync:/config/calsync.toml`) and restart the service.
-The image itself only contains the inert example.
+After step 4 has started the inert container, install your private configuration as the service user:
+
+```sh
+docker compose exec -T calsync sh -c 'umask 077; cat > /config/.calsync.toml.tmp && mv /config/.calsync.toml.tmp /config/calsync.toml' < "$HOME/calsync-local/calsync.toml"
+docker compose restart calsync
+```
+
+The image itself only contains the inert example. Keep pairs disabled until the Google token is installed
+(see step 5). A new named volume is initialized with owner-only configuration permissions. If you reuse
+an existing volume from an older image, check its ownership and permissions before installing the file.
 
 ## 4. Run inert with Docker Compose
 
@@ -52,7 +59,9 @@ No port is published. The health endpoint binds to `127.0.0.1` inside the contai
 The timezone is `TZ` (default `UTC`). Calendars created by calsync use `--timezone`, `CALSYNC_TIMEZONE`,
 `TZ` or `UTC`, in that order.
 
-## 5. Find your calendars (read-only)
+## 5. Install the Google token and find your calendars (read-only)
+
+Follow [GOOGLE-OAUTH.md](GOOGLE-OAUTH.md) to create and install the token while all pairs are disabled.
 
 ```sh
 docker compose exec calsync python -m calsync list-calendars
@@ -62,7 +71,8 @@ Copy the iCloud collection id and Google calendar id into your pair in `calsync.
 
 ## 6. Mirror and audit (still read-only)
 
-Set the pair to `mode = "mirror"`, redeploy, then:
+Set the pair to `mode = "mirror"` in your local configuration, install the updated file as in step 3,
+restart, then:
 
 ```sh
 docker compose exec calsync python -m calsync audit --pair my_pair --detail
