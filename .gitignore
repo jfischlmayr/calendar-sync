@@ -1,0 +1,30 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv*/
+venv/
+# environment and secrets
+.env
+.env.*
+!.env.example
+*.key
+*.age.key
+*.pem
+tokens/
+google.json
+# private runtime data, configs, fixtures and backups: never commit
+data/
+/config/*.toml
+!/config/calsync.example.toml
+*.local.toml
+.private-fixtures/
+*.tar.gz.age
+*.age
+*.manifest.json
+*.sha256
+reports/
+# agent / task artifacts
+BRIEF.md
+RESULT.md
+.claude/
+.codex/

@@ -1,0 +1,947 @@
+{
+  "description": "Synthetic corpus; every name/address/domain is invented. kind = expected classifier result. group = same real-world event.",
+  "self_addresses": {
+    "icloud": "me@example.com",
+    "google": "me@gmail.example"
+  },
+  "kinds": [
+    "normal",
+    "guest",
+    "birthday",
+    "unsupported:<reason>"
+  ],
+  "group_relations": {
+    "same_uid": "identical UID on both sides (must be recognised as the same event)",
+    "strict_duplicate": "different UIDs, same instant/date, same title, same duration",
+    "loose_duplicate": "different UIDs, same start, title reworded or differing end",
+    "birthday_match": "yearly all-day birthdays matching by name + month-day"
+  },
+  "files": {
+    "google/allday-01-vacation.ics": {
+      "side": "google",
+      "uid": "tjshlfhg7toomi3kkpwdnwdg7x@google.com",
+      "uids": [
+        "tjshlfhg7toomi3kkpwdnwdg7x@google.com"
+      ],
+      "kind": "normal",
+      "case": "allday_single",
+      "group": null
+    },
+    "google/allday-02-move.ics": {
+      "side": "google",
+      "uid": "nwrtoe7fhrdlzvd63nxdlyw5mi@google.com",
+      "uids": [
+        "nwrtoe7fhrdlzvd63nxdlyw5mi@google.com"
+      ],
+      "kind": "normal",
+      "case": "allday_single",
+      "group": "g-allday-dup"
+    },
+    "google/allday-multi-01-skiing.ics": {
+      "side": "google",
+      "uid": "hs65pc36ckzzucp4mzjojvpuoi@google.com",
+      "uids": [
+        "hs65pc36ckzzucp4mzjojvpuoi@google.com"
+      ],
+      "kind": "normal",
+      "case": "allday_multi",
+      "group": "g-allday-multi-dup"
+    },
+    "google/allday-multi-02-business-trip.ics": {
+      "side": "google",
+      "uid": "p37vzfewnhdezfrpaicatdotpc@google.com",
+      "uids": [
+        "p37vzfewnhdezfrpaicatdotpc@google.com"
+      ],
+      "kind": "normal",
+      "case": "allday_multi",
+      "group": null
+    },
+    "google/birthday-01-anna.ics": {
+      "side": "google",
+      "uid": "wfmxzq6bks43x5u4xafbcy4tby@google.com",
+      "uids": [
+        "wfmxzq6bks43x5u4xafbcy4tby@google.com"
+      ],
+      "kind": "birthday",
+      "case": "birthdays",
+      "group": "g-bday-anna"
+    },
+    "google/birthday-02-lukas.ics": {
+      "side": "google",
+      "uid": "vhxdre3n77ncqcujx22w7m3y23@google.com",
+      "uids": [
+        "vhxdre3n77ncqcujx22w7m3y23@google.com"
+      ],
+      "kind": "birthday",
+      "case": "birthdays",
+      "group": "g-bday-lukas"
+    },
+    "google/birthday-04-tobias-self-attendee.ics": {
+      "side": "google",
+      "uid": "76qijadtpwh3tgeyspjqsx2lcb@google.com",
+      "uids": [
+        "76qijadtpwh3tgeyspjqsx2lcb@google.com"
+      ],
+      "kind": "birthday",
+      "case": "birthdays",
+      "group": null,
+      "note": "ORGANIZER and ATTENDEE are both the calendar owner (Google contact birthdays)"
+    },
+    "google/birthday-05-greta-birthday-uid.ics": {
+      "side": "google",
+      "uid": "birthday_1e8ed87cd985a5525012@google.com",
+      "uids": [
+        "birthday_1e8ed87cd985a5525012@google.com"
+      ],
+      "kind": "birthday",
+      "case": "birthdays",
+      "group": null,
+      "note": "UID starts with birthday_"
+    },
+    "google/dst-series-04-march.ics": {
+      "side": "google",
+      "uid": "2g6ppadiz75c7rlqfsknrlxfux@google.com",
+      "uids": [
+        "2g6ppadiz75c7rlqfsknrlxfux@google.com"
+      ],
+      "kind": "normal",
+      "case": "dst_series",
+      "group": null,
+      "note": "weekly TZID series crossing the 2027-03-28 spring-forward"
+    },
+    "google/exdate-conflict-01.ics": {
+      "side": "google",
+      "uid": "o6eglxafbcin3kx4royrzkfonk@google.com",
+      "uids": [
+        "o6eglxafbcin3kx4royrzkfonk@google.com"
+      ],
+      "kind": "normal",
+      "case": "exdate_conflict",
+      "group": "g-exdate-conflict"
+    },
+    "google/floating-01.ics": {
+      "side": "google",
+      "uid": "3z2mutqsqm6ghnr5e6esb7zqxy@google.com",
+      "uids": [
+        "3z2mutqsqm6ghnr5e6esb7zqxy@google.com"
+      ],
+      "kind": "unsupported:floating_time",
+      "case": "floating_time",
+      "group": null,
+      "note": "no TZID and no Z: floating local time (providers anchor it to a zone: not copied)"
+    },
+    "google/gmt-offset-01-summer.ics": {
+      "side": "google",
+      "uid": "66B41FA1-49BB-5D94-A8F0-CCF4C610BD6B",
+      "uids": [
+        "66B41FA1-49BB-5D94-A8F0-CCF4C610BD6B"
+      ],
+      "kind": "normal",
+      "case": "tz_gmt_offset",
+      "group": "g-gmt-offset"
+    },
+    "google/guest-02-invite-accepted.ics": {
+      "side": "google",
+      "uid": "2ldspgjvtdwqnbegaz2cgywlou@google.com",
+      "uids": [
+        "2ldspgjvtdwqnbegaz2cgywlou@google.com"
+      ],
+      "kind": "guest",
+      "case": "guests",
+      "group": null,
+      "note": "external organizer, me ACCEPTED"
+    },
+    "google/guest-03-invite-tentative.ics": {
+      "side": "google",
+      "uid": "p452evtdkrql7jd4uzwtifrbt7@google.com",
+      "uids": [
+        "p452evtdkrql7jd4uzwtifrbt7@google.com"
+      ],
+      "kind": "guest",
+      "case": "guests",
+      "group": null,
+      "note": "external organizer, me TENTATIVE"
+    },
+    "google/guest-06-conference-attendees.ics": {
+      "side": "google",
+      "uid": "o2a3m7266lyodm42333eokdv6w@google.com",
+      "uids": [
+        "o2a3m7266lyodm42333eokdv6w@google.com"
+      ],
+      "kind": "guest",
+      "case": "guests",
+      "group": null,
+      "note": "conference link + attendee list"
+    },
+    "google/guest-07-organiser-self-only.ics": {
+      "side": "google",
+      "uid": "gobcil4tnrfscgrb5cqq555xvh@google.com",
+      "uids": [
+        "gobcil4tnrfscgrb5cqq555xvh@google.com"
+      ],
+      "kind": "normal",
+      "case": "guests",
+      "group": null,
+      "note": "ORGANIZER and sole ATTENDEE are the owner: not a guest event"
+    },
+    "google/long-description-01.ics": {
+      "side": "google",
+      "uid": "czowgdlfnldzx7psyhf76j7okh@google.com",
+      "uids": [
+        "czowgdlfnldzx7psyhf76j7okh@google.com"
+      ],
+      "kind": "normal",
+      "case": "long_description",
+      "group": null,
+      "note": "DESCRIPTION is 429 characters before escaping/folding"
+    },
+    "google/loose-dup-01.ics": {
+      "side": "google",
+      "uid": "javkikguiywhjysrzbdtspaghd@google.com",
+      "uids": [
+        "javkikguiywhjysrzbdtspaghd@google.com"
+      ],
+      "kind": "normal",
+      "case": "loose_duplicate",
+      "group": "g-loose-dup-01"
+    },
+    "google/loose-dup-02.ics": {
+      "side": "google",
+      "uid": "mnqtmck3mcqjpphlvtldq75zp2@google.com",
+      "uids": [
+        "mnqtmck3mcqjpphlvtldq75zp2@google.com"
+      ],
+      "kind": "normal",
+      "case": "loose_duplicate",
+      "group": "g-loose-dup-02"
+    },
+    "google/monthly-last-friday-01.ics": {
+      "side": "google",
+      "uid": "ctxvwvfwg7ajyhrgvkwgc56b6r@google.com",
+      "uids": [
+        "ctxvwvfwg7ajyhrgvkwgc56b6r@google.com"
+      ],
+      "kind": "normal",
+      "case": "monthly_byday_last_friday",
+      "group": null
+    },
+    "google/no-uid-01.ics": {
+      "side": "google",
+      "uid": null,
+      "uids": [],
+      "kind": "unsupported:no_uid",
+      "case": "no_uid",
+      "group": null
+    },
+    "google/only-timed-01-dentist.ics": {
+      "side": "google",
+      "uid": "bqv4iulslbzn5zagjqfaeqea6s@google.com",
+      "uids": [
+        "bqv4iulslbzn5zagjqfaeqea6s@google.com"
+      ],
+      "kind": "normal",
+      "case": "google_only_timed",
+      "group": null
+    },
+    "google/only-timed-02-umlauts.ics": {
+      "side": "google",
+      "uid": "ud2fl5au55hfcy4gq43ar3n5mm@google.com",
+      "uids": [
+        "ud2fl5au55hfcy4gq43ar3n5mm@google.com"
+      ],
+      "kind": "normal",
+      "case": "google_only_timed",
+      "group": null
+    },
+    "google/only-timed-03-email-alarm-attendee.ics": {
+      "side": "google",
+      "uid": "tkvhxhapzca6zjdjmdq2dvw7gj@google.com",
+      "uids": [
+        "tkvhxhapzca6zjdjmdq2dvw7gj@google.com"
+      ],
+      "kind": "normal",
+      "case": "google_only_timed",
+      "group": null,
+      "note": "ATTENDEE only inside VALARM (EMAIL action): must NOT be classified as guest"
+    },
+    "google/only-timed-04-transparent.ics": {
+      "side": "google",
+      "uid": "sfpnu4injujgbb3trbrydu6g6t@google.com",
+      "uids": [
+        "sfpnu4injujgbb3trbrydu6g6t@google.com"
+      ],
+      "kind": "normal",
+      "case": "google_only_timed",
+      "group": null
+    },
+    "google/orphan-override-01.ics": {
+      "side": "google",
+      "uid": "mij2hjkzfx2ftdfkbe3zfd5ig6@google.com",
+      "uids": [
+        "mij2hjkzfx2ftdfkbe3zfd5ig6@google.com"
+      ],
+      "kind": "unsupported:orphan_override",
+      "case": "orphan_override",
+      "group": null
+    },
+    "google/overrides-01.ics": {
+      "side": "google",
+      "uid": "4qwaqfnioheikwnu7amrd7agvs@google.com",
+      "uids": [
+        "4qwaqfnioheikwnu7amrd7agvs@google.com"
+      ],
+      "kind": "normal",
+      "case": "recurrence_overrides",
+      "group": null
+    },
+    "google/overrides-02-same-uid.ics": {
+      "side": "google",
+      "uid": "5vymkeiwr64k5tufep2ljdgaix@google.com",
+      "uids": [
+        "5vymkeiwr64k5tufep2ljdgaix@google.com"
+      ],
+      "kind": "normal",
+      "case": "recurrence_overrides",
+      "group": "g-overrides-same-uid"
+    },
+    "google/rdate-01.ics": {
+      "side": "google",
+      "uid": "zrccyl5j4oyt4f3nczas7xoqpi@google.com",
+      "uids": [
+        "zrccyl5j4oyt4f3nczas7xoqpi@google.com"
+      ],
+      "kind": "unsupported:rdate",
+      "case": "rdate",
+      "group": null,
+      "note": "RRULE combined with RDATE"
+    },
+    "google/rrule-biweekly-count-01.ics": {
+      "side": "google",
+      "uid": "ane25m4kogvabnenxnbzzm3pjv@google.com",
+      "uids": [
+        "ane25m4kogvabnenxnbzzm3pjv@google.com"
+      ],
+      "kind": "normal",
+      "case": "rrule_weekly_count",
+      "group": null
+    },
+    "google/rrule-until-exdate-01.ics": {
+      "side": "google",
+      "uid": "5bbram6ddub5fe5m37jj4s7fic@google.com",
+      "uids": [
+        "5bbram6ddub5fe5m37jj4s7fic@google.com"
+      ],
+      "kind": "normal",
+      "case": "rrule_until_exdate",
+      "group": null
+    },
+    "google/same-uid-01.ics": {
+      "side": "google",
+      "uid": "nxdhvmovw7rrqmofy7hxju7lmg@google.com",
+      "uids": [
+        "nxdhvmovw7rrqmofy7hxju7lmg@google.com"
+      ],
+      "kind": "normal",
+      "case": "same_uid_both",
+      "group": "g-same-uid-01"
+    },
+    "google/same-uid-02.ics": {
+      "side": "google",
+      "uid": "0129CF02-099B-513A-A7E0-EC45CBACCB4E",
+      "uids": [
+        "0129CF02-099B-513A-A7E0-EC45CBACCB4E"
+      ],
+      "kind": "normal",
+      "case": "same_uid_both",
+      "group": "g-same-uid-02"
+    },
+    "google/strict-dup-01.ics": {
+      "side": "google",
+      "uid": "y6ua2nsld7vxee47b7mpblftfj@google.com",
+      "uids": [
+        "y6ua2nsld7vxee47b7mpblftfj@google.com"
+      ],
+      "kind": "normal",
+      "case": "strict_duplicate",
+      "group": "g-strict-dup-01"
+    },
+    "google/strict-dup-02.ics": {
+      "side": "google",
+      "uid": "3u2shmfxmxsrpdvwohby3elgok@google.com",
+      "uids": [
+        "3u2shmfxmxsrpdvwohby3elgok@google.com"
+      ],
+      "kind": "normal",
+      "case": "strict_duplicate",
+      "group": "g-strict-dup-02"
+    },
+    "google/thisandfuture-01.ics": {
+      "side": "google",
+      "uid": "722nofniqradymdr4ttat5c2qs@google.com",
+      "uids": [
+        "722nofniqradymdr4ttat5c2qs@google.com"
+      ],
+      "kind": "unsupported:thisandfuture",
+      "case": "recurrence_thisandfuture",
+      "group": null
+    },
+    "google/two-uids-01.ics": {
+      "side": "google",
+      "uid": "fe6iijv4737ms6ill6taatne7f@google.com",
+      "uids": [
+        "fe6iijv4737ms6ill6taatne7f@google.com",
+        "4q7hq3yrntiucmtmocmh7bsyfx@google.com"
+      ],
+      "kind": "unsupported:multiple_uids",
+      "case": "two_uids",
+      "group": null
+    },
+    "google/url-01.ics": {
+      "side": "google",
+      "uid": "znrsxn7dumtjxjhdyemc4g3xtx@google.com",
+      "uids": [
+        "znrsxn7dumtjxjhdyemc4g3xtx@google.com"
+      ],
+      "kind": "normal",
+      "case": "attach_url",
+      "group": null
+    },
+    "google/vtodo-01.ics": {
+      "side": "google",
+      "uid": "2goosps5zie4ilr57dmwn6v3kt@google.com",
+      "uids": [
+        "2goosps5zie4ilr57dmwn6v3kt@google.com"
+      ],
+      "kind": "unsupported:vtodo",
+      "case": "vtodo",
+      "group": null
+    },
+    "google/yearly-timed-01-anniversary.ics": {
+      "side": "google",
+      "uid": "zxbbq6gioeuxcumrex3mvxu3sl@google.com",
+      "uids": [
+        "zxbbq6gioeuxcumrex3mvxu3sl@google.com"
+      ],
+      "kind": "normal",
+      "case": "yearly_timed",
+      "group": null,
+      "note": "yearly RRULE but timed (09:00): not a birthday"
+    },
+    "icloud/allday-01-bridge-day.ics": {
+      "side": "icloud",
+      "uid": "00B03EB9-8D61-50F4-BFF4-54468FCB0AEE",
+      "uids": [
+        "00B03EB9-8D61-50F4-BFF4-54468FCB0AEE"
+      ],
+      "kind": "normal",
+      "case": "allday_single",
+      "group": null
+    },
+    "icloud/allday-02-move.ics": {
+      "side": "icloud",
+      "uid": "A6885562-1B74-52CA-9065-11B34B4493F4",
+      "uids": [
+        "A6885562-1B74-52CA-9065-11B34B4493F4"
+      ],
+      "kind": "normal",
+      "case": "allday_single",
+      "group": "g-allday-dup"
+    },
+    "icloud/allday-multi-01-skiing.ics": {
+      "side": "icloud",
+      "uid": "6D9AE13D-5DD7-54F5-BE8A-3816676F7C4D",
+      "uids": [
+        "6D9AE13D-5DD7-54F5-BE8A-3816676F7C4D"
+      ],
+      "kind": "normal",
+      "case": "allday_multi",
+      "group": "g-allday-multi-dup"
+    },
+    "icloud/attach-uri-01.ics": {
+      "side": "icloud",
+      "uid": "90A1F6BF-DA62-5ABF-B43E-C6169EFA4401",
+      "uids": [
+        "90A1F6BF-DA62-5ABF-B43E-C6169EFA4401"
+      ],
+      "kind": "normal",
+      "case": "attach_url",
+      "group": null
+    },
+    "icloud/birthday-01-anna.ics": {
+      "side": "icloud",
+      "uid": "8C58F045-D5F7-5580-9AD7-3467C16561DA",
+      "uids": [
+        "8C58F045-D5F7-5580-9AD7-3467C16561DA"
+      ],
+      "kind": "birthday",
+      "case": "birthdays",
+      "group": "g-bday-anna"
+    },
+    "icloud/birthday-02-lukas.ics": {
+      "side": "icloud",
+      "uid": "7BD52D46-F61A-50CF-9C1D-AB449FA3A1B7",
+      "uids": [
+        "7BD52D46-F61A-50CF-9C1D-AB449FA3A1B7"
+      ],
+      "kind": "birthday",
+      "case": "birthdays",
+      "group": "g-bday-lukas"
+    },
+    "icloud/birthday-03-sabine-icloud-only.ics": {
+      "side": "icloud",
+      "uid": "B2FE06EB-1287-5614-9C19-227E575202EC",
+      "uids": [
+        "B2FE06EB-1287-5614-9C19-227E575202EC"
+      ],
+      "kind": "birthday",
+      "case": "birthdays",
+      "group": null
+    },
+    "icloud/dst-series-01-march.ics": {
+      "side": "icloud",
+      "uid": "1117E3E9-3F1C-5DF8-AD40-1E663024E13B",
+      "uids": [
+        "1117E3E9-3F1C-5DF8-AD40-1E663024E13B"
+      ],
+      "kind": "normal",
+      "case": "dst_series",
+      "group": null,
+      "note": "weekly series crossing the 2027-03-28 spring-forward"
+    },
+    "icloud/dst-series-02-october.ics": {
+      "side": "icloud",
+      "uid": "5C42B153-7654-5988-9752-334118402731",
+      "uids": [
+        "5C42B153-7654-5988-9752-334118402731"
+      ],
+      "kind": "normal",
+      "case": "dst_series",
+      "group": null,
+      "note": "weekly series crossing the 2027-10-31 fall-back"
+    },
+    "icloud/dst-series-03-change-day.ics": {
+      "side": "icloud",
+      "uid": "FD400F33-03E4-52DD-9CB5-A40BEA37BA4C",
+      "uids": [
+        "FD400F33-03E4-52DD-9CB5-A40BEA37BA4C"
+      ],
+      "kind": "normal",
+      "case": "dst_series",
+      "group": null,
+      "note": "DTSTART on the 2026-10-25 fall-back day itself"
+    },
+    "icloud/exdate-conflict-01.ics": {
+      "side": "icloud",
+      "uid": "o6eglxafbcin3kx4royrzkfonk@google.com",
+      "uids": [
+        "o6eglxafbcin3kx4royrzkfonk@google.com"
+      ],
+      "kind": "normal",
+      "case": "exdate_conflict",
+      "group": "g-exdate-conflict"
+    },
+    "icloud/floating-01.ics": {
+      "side": "icloud",
+      "uid": "612E17FC-FC12-5DD8-9A8E-ABA0E3B61279",
+      "uids": [
+        "612E17FC-FC12-5DD8-9A8E-ABA0E3B61279"
+      ],
+      "kind": "unsupported:floating_time",
+      "case": "floating_time",
+      "group": null,
+      "note": "no TZID and no Z: floating local time (providers anchor it to a zone: not copied)"
+    },
+    "icloud/gmt-offset-01-summer.ics": {
+      "side": "icloud",
+      "uid": "66B41FA1-49BB-5D94-A8F0-CCF4C610BD6B",
+      "uids": [
+        "66B41FA1-49BB-5D94-A8F0-CCF4C610BD6B"
+      ],
+      "kind": "normal",
+      "case": "tz_gmt_offset",
+      "group": "g-gmt-offset"
+    },
+    "icloud/gmt-offset-02-winter.ics": {
+      "side": "icloud",
+      "uid": "4FFA9C20-0DF9-5539-81AB-6B9FAC32783C",
+      "uids": [
+        "4FFA9C20-0DF9-5539-81AB-6B9FAC32783C"
+      ],
+      "kind": "normal",
+      "case": "tz_gmt_offset",
+      "group": null
+    },
+    "icloud/guest-01-invite-needs-action.ics": {
+      "side": "icloud",
+      "uid": "4C546F5A-908D-545C-BF67-009ABBDC3A9F",
+      "uids": [
+        "4C546F5A-908D-545C-BF67-009ABBDC3A9F"
+      ],
+      "kind": "guest",
+      "case": "guests",
+      "group": null,
+      "note": "external organizer, me NEEDS-ACTION"
+    },
+    "icloud/guest-04-i-organise-two-guests.ics": {
+      "side": "icloud",
+      "uid": "ECFCB4E1-6629-5474-84D0-4F015353C411",
+      "uids": [
+        "ECFCB4E1-6629-5474-84D0-4F015353C411"
+      ],
+      "kind": "guest",
+      "case": "guests",
+      "group": null,
+      "note": "I organise, two external attendees"
+    },
+    "icloud/guest-05-organiser-self-only.ics": {
+      "side": "icloud",
+      "uid": "31CCB326-D456-5F9D-915C-922116F5C164",
+      "uids": [
+        "31CCB326-D456-5F9D-915C-922116F5C164"
+      ],
+      "kind": "normal",
+      "case": "guests",
+      "group": null,
+      "note": "ORGANIZER and sole ATTENDEE are the owner: not a guest event"
+    },
+    "icloud/long-description-01.ics": {
+      "side": "icloud",
+      "uid": "0FB2B48B-20F7-5C82-A376-0AB5F7EBD119",
+      "uids": [
+        "0FB2B48B-20F7-5C82-A376-0AB5F7EBD119"
+      ],
+      "kind": "normal",
+      "case": "long_description",
+      "group": null,
+      "note": "DESCRIPTION is 429 characters before escaping/folding"
+    },
+    "icloud/loose-dup-01.ics": {
+      "side": "icloud",
+      "uid": "0D2195C1-4737-5C70-95E8-90FEB8BC36AA",
+      "uids": [
+        "0D2195C1-4737-5C70-95E8-90FEB8BC36AA"
+      ],
+      "kind": "normal",
+      "case": "loose_duplicate",
+      "group": "g-loose-dup-01"
+    },
+    "icloud/loose-dup-02.ics": {
+      "side": "icloud",
+      "uid": "18DC4BF3-5969-5964-B3BD-DD2C24E25FED",
+      "uids": [
+        "18DC4BF3-5969-5964-B3BD-DD2C24E25FED"
+      ],
+      "kind": "normal",
+      "case": "loose_duplicate",
+      "group": "g-loose-dup-02"
+    },
+    "icloud/monthly-last-friday-01.ics": {
+      "side": "icloud",
+      "uid": "9B5D352D-6F22-57FD-BC04-BAD358E9AD49",
+      "uids": [
+        "9B5D352D-6F22-57FD-BC04-BAD358E9AD49"
+      ],
+      "kind": "normal",
+      "case": "monthly_byday_last_friday",
+      "group": null
+    },
+    "icloud/no-uid-01.ics": {
+      "side": "icloud",
+      "uid": null,
+      "uids": [],
+      "kind": "unsupported:no_uid",
+      "case": "no_uid",
+      "group": null
+    },
+    "icloud/only-timed-01-kickoff.ics": {
+      "side": "icloud",
+      "uid": "A489C2AE-06F2-5E07-856B-02436E76C0BD",
+      "uids": [
+        "A489C2AE-06F2-5E07-856B-02436E76C0BD"
+      ],
+      "kind": "normal",
+      "case": "icloud_only_timed",
+      "group": null
+    },
+    "icloud/only-timed-02-escapes.ics": {
+      "side": "icloud",
+      "uid": "491634DE-9AA1-5B2E-922D-1F1A280E8FFE",
+      "uids": [
+        "491634DE-9AA1-5B2E-922D-1F1A280E8FFE"
+      ],
+      "kind": "normal",
+      "case": "icloud_only_timed",
+      "group": null
+    },
+    "icloud/only-timed-03-two-alarms.ics": {
+      "side": "icloud",
+      "uid": "0D98E144-BC90-58D5-89EC-DA97D7620503",
+      "uids": [
+        "0D98E144-BC90-58D5-89EC-DA97D7620503"
+      ],
+      "kind": "normal",
+      "case": "icloud_only_timed",
+      "group": null
+    },
+    "icloud/only-timed-04-transparent.ics": {
+      "side": "icloud",
+      "uid": "6338C75E-AE37-5BE2-A6D0-64193F0FAC2C",
+      "uids": [
+        "6338C75E-AE37-5BE2-A6D0-64193F0FAC2C"
+      ],
+      "kind": "normal",
+      "case": "icloud_only_timed",
+      "group": null
+    },
+    "icloud/orphan-override-01.ics": {
+      "side": "icloud",
+      "uid": "96D06911-1134-5448-94CE-8825BF054F19",
+      "uids": [
+        "96D06911-1134-5448-94CE-8825BF054F19"
+      ],
+      "kind": "unsupported:orphan_override",
+      "case": "orphan_override",
+      "group": null
+    },
+    "icloud/overrides-01.ics": {
+      "side": "icloud",
+      "uid": "097F8A31-D716-58F1-9EB3-44B636B3108B",
+      "uids": [
+        "097F8A31-D716-58F1-9EB3-44B636B3108B"
+      ],
+      "kind": "normal",
+      "case": "recurrence_overrides",
+      "group": null,
+      "note": "master + one moved + one STATUS:CANCELLED override in one resource"
+    },
+    "icloud/overrides-02-same-uid.ics": {
+      "side": "icloud",
+      "uid": "5vymkeiwr64k5tufep2ljdgaix@google.com",
+      "uids": [
+        "5vymkeiwr64k5tufep2ljdgaix@google.com"
+      ],
+      "kind": "normal",
+      "case": "recurrence_overrides",
+      "group": "g-overrides-same-uid"
+    },
+    "icloud/rdate-01.ics": {
+      "side": "icloud",
+      "uid": "C67A67EC-111A-5AA7-BA9A-CFF5F1DA416B",
+      "uids": [
+        "C67A67EC-111A-5AA7-BA9A-CFF5F1DA416B"
+      ],
+      "kind": "unsupported:rdate",
+      "case": "rdate",
+      "group": null
+    },
+    "icloud/rrule-until-exdate-01.ics": {
+      "side": "icloud",
+      "uid": "154EF2EA-773D-5E10-AD0D-5170384D4789",
+      "uids": [
+        "154EF2EA-773D-5E10-AD0D-5170384D4789"
+      ],
+      "kind": "normal",
+      "case": "rrule_until_exdate",
+      "group": null
+    },
+    "icloud/rrule-weekly-count-01.ics": {
+      "side": "icloud",
+      "uid": "2A98D32D-7955-5585-B715-463FCCCA91EF",
+      "uids": [
+        "2A98D32D-7955-5585-B715-463FCCCA91EF"
+      ],
+      "kind": "normal",
+      "case": "rrule_weekly_count",
+      "group": null
+    },
+    "icloud/same-uid-01.ics": {
+      "side": "icloud",
+      "uid": "nxdhvmovw7rrqmofy7hxju7lmg@google.com",
+      "uids": [
+        "nxdhvmovw7rrqmofy7hxju7lmg@google.com"
+      ],
+      "kind": "normal",
+      "case": "same_uid_both",
+      "group": "g-same-uid-01"
+    },
+    "icloud/same-uid-02.ics": {
+      "side": "icloud",
+      "uid": "0129CF02-099B-513A-A7E0-EC45CBACCB4E",
+      "uids": [
+        "0129CF02-099B-513A-A7E0-EC45CBACCB4E"
+      ],
+      "kind": "normal",
+      "case": "same_uid_both",
+      "group": "g-same-uid-02"
+    },
+    "icloud/strict-dup-01.ics": {
+      "side": "icloud",
+      "uid": "11C9782B-87EB-5ED7-841D-519BECBEFA37",
+      "uids": [
+        "11C9782B-87EB-5ED7-841D-519BECBEFA37"
+      ],
+      "kind": "normal",
+      "case": "strict_duplicate",
+      "group": "g-strict-dup-01"
+    },
+    "icloud/strict-dup-02.ics": {
+      "side": "icloud",
+      "uid": "97EF4A8A-42AD-5BF7-B4F0-A2B35167E706",
+      "uids": [
+        "97EF4A8A-42AD-5BF7-B4F0-A2B35167E706"
+      ],
+      "kind": "normal",
+      "case": "strict_duplicate",
+      "group": "g-strict-dup-02"
+    },
+    "icloud/thisandfuture-01.ics": {
+      "side": "icloud",
+      "uid": "200FA5D8-F788-5513-93C8-5830A71DF311",
+      "uids": [
+        "200FA5D8-F788-5513-93C8-5830A71DF311"
+      ],
+      "kind": "unsupported:thisandfuture",
+      "case": "recurrence_thisandfuture",
+      "group": null
+    },
+    "icloud/two-uids-01.ics": {
+      "side": "icloud",
+      "uid": "F3F8FE82-F253-52EE-B6D8-8F644C89060C",
+      "uids": [
+        "F3F8FE82-F253-52EE-B6D8-8F644C89060C",
+        "CCA8F255-8D6F-5177-B2B9-CA25CE5B7101"
+      ],
+      "kind": "unsupported:multiple_uids",
+      "case": "two_uids",
+      "group": null
+    },
+    "icloud/vtodo-01.ics": {
+      "side": "icloud",
+      "uid": "F60D888C-0326-5E3E-9D3C-9C25F30A133F",
+      "uids": [
+        "F60D888C-0326-5E3E-9D3C-9C25F30A133F"
+      ],
+      "kind": "unsupported:vtodo",
+      "case": "vtodo",
+      "group": null
+    },
+    "icloud/yearly-timed-01-anniversary.ics": {
+      "side": "icloud",
+      "uid": "1A7CD805-0454-50F8-A1D1-BF3A03C4BBBE",
+      "uids": [
+        "1A7CD805-0454-50F8-A1D1-BF3A03C4BBBE"
+      ],
+      "kind": "normal",
+      "case": "yearly_timed",
+      "group": null,
+      "note": "yearly RRULE but timed (09:00): not a birthday"
+    }
+  },
+  "groups": {
+    "g-allday-dup": {
+      "relation": "strict_duplicate",
+      "note": "Different UIDs, same all-day date and title",
+      "files": [
+        "google/allday-02-move.ics",
+        "icloud/allday-02-move.ics"
+      ]
+    },
+    "g-allday-multi-dup": {
+      "relation": "strict_duplicate",
+      "note": "Different UIDs, same multi-day all-day span and title",
+      "files": [
+        "google/allday-multi-01-skiing.ics",
+        "icloud/allday-multi-01-skiing.ics"
+      ]
+    },
+    "g-bday-anna": {
+      "relation": "birthday_match",
+      "note": "Same person+month-day, different UIDs, same year",
+      "files": [
+        "google/birthday-01-anna.ics",
+        "icloud/birthday-01-anna.ics"
+      ]
+    },
+    "g-bday-lukas": {
+      "relation": "birthday_match",
+      "note": "Same person+month-day, different UIDs, different DTSTART year (iCloud 1604 = year unknown)",
+      "files": [
+        "google/birthday-02-lukas.ics",
+        "icloud/birthday-02-lukas.ics"
+      ]
+    },
+    "g-exdate-conflict": {
+      "relation": "same_uid",
+      "note": "Same series UID; providers disagree on EXDATE (common: 2026-11-25; iCloud also drops 12-23, Google also drops 12-09)",
+      "files": [
+        "google/exdate-conflict-01.ics",
+        "icloud/exdate-conflict-01.ics"
+      ]
+    },
+    "g-gmt-offset": {
+      "relation": "same_uid",
+      "note": "Same UID; iCloud TZID=GMT+0200 vs Google UTC for the same instant",
+      "files": [
+        "google/gmt-offset-01-summer.ics",
+        "icloud/gmt-offset-01-summer.ics"
+      ]
+    },
+    "g-loose-dup-01": {
+      "relation": "loose_duplicate",
+      "note": "Different UIDs, same start; word order swapped, same start and duration",
+      "files": [
+        "google/loose-dup-01.ics",
+        "icloud/loose-dup-01.ics"
+      ]
+    },
+    "g-loose-dup-02": {
+      "relation": "loose_duplicate",
+      "note": "Different UIDs, same start; title reworded, same start, different end",
+      "files": [
+        "google/loose-dup-02.ics",
+        "icloud/loose-dup-02.ics"
+      ]
+    },
+    "g-overrides-same-uid": {
+      "relation": "same_uid",
+      "note": "Series with moved+cancelled overrides, same UID; iCloud TZID vs Google UTC",
+      "files": [
+        "google/overrides-02-same-uid.ics",
+        "icloud/overrides-02-same-uid.ics"
+      ]
+    },
+    "g-same-uid-01": {
+      "relation": "same_uid",
+      "note": "Google-origin UID present on iCloud (TZID) and Google (UTC)",
+      "files": [
+        "google/same-uid-01.ics",
+        "icloud/same-uid-01.ics"
+      ]
+    },
+    "g-same-uid-02": {
+      "relation": "same_uid",
+      "note": "iCloud-origin UID present on Google; instant in CEST",
+      "files": [
+        "google/same-uid-02.ics",
+        "icloud/same-uid-02.ics"
+      ]
+    },
+    "g-strict-dup-01": {
+      "relation": "strict_duplicate",
+      "note": "Different UIDs, same instant, same title, same duration",
+      "files": [
+        "google/strict-dup-01.ics",
+        "icloud/strict-dup-01.ics"
+      ]
+    },
+    "g-strict-dup-02": {
+      "relation": "strict_duplicate",
+      "note": "Different UIDs, same instant, same title, same duration",
+      "files": [
+        "google/strict-dup-02.ics",
+        "icloud/strict-dup-02.ics"
+      ]
+    }
+  }
+}

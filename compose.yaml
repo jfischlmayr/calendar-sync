@@ -1,0 +1,61 @@
+# Docker Compose service (also usable as a Coolify "Docker Compose" resource, compose file: /compose.yaml).
+# Ships INERT: no pair is enabled, CALSYNC_ALLOW_WRITES defaults to 0. No port is published and no
+# domain is required: health is probed inside the container (HEALTHCHECK) and by Coolify.
+# Provide secrets via the environment (or your platform's secret store, e.g. Coolify's environment UI marked
+# "secret"); never write them into this file or commit them.
+services:
+  calsync:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: calsync:local            # local build tag only; no image is published by this project
+    restart: unless-stopped
+    init: false                       # tini is the image entrypoint
+    read_only: true                   # root fs read-only; only /data, /config, /run/calsync, /tmp writable
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+      - /run/calsync:size=16m,mode=0700,uid=10001,gid=10001   # generated vdirsyncer configs (0600) live in RAM only
+    mem_limit: 512m
+    cpus: 0.5
+    environment:
+      TZ: ${TZ:-UTC}                  # set your IANA zone, e.g. Europe/Berlin
+      CALSYNC_TIMEZONE: ${CALSYNC_TIMEZONE:-}   # optional; zone for calendars created by calsync (falls back to TZ)
+      CALSYNC_ALLOW_WRITES: ${CALSYNC_ALLOW_WRITES:-0}
+      CALSYNC_INTERVAL: ${CALSYNC_INTERVAL:-300}
+      ICLOUD_USER: ${ICLOUD_USER:-}
+      ICLOUD_APP_PASSWORD: ${ICLOUD_APP_PASSWORD:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      ALERT_WEBHOOK_URL: ${ALERT_WEBHOOK_URL:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      ALERT_EMAIL_TO: ${ALERT_EMAIL_TO:-}
+      ALERT_EMAIL_FROM: ${ALERT_EMAIL_FROM:-}
+      CALSYNC_BACKUP_AGE_RECIPIENTS: ${CALSYNC_BACKUP_AGE_RECIPIENTS:-}
+      CALSYNC_BACKUP_REMOTE: ${CALSYNC_BACKUP_REMOTE:-}
+      CALSYNC_BACKUP_HOUR_UTC: ${CALSYNC_BACKUP_HOUR_UTC:-3}
+      # optional rclone remote definition, e.g. RCLONE_CONFIG_OFFSITE_TYPE=s3 ... (see docs/BACKUP-RESTORE.md)
+      RCLONE_CONFIG_OFFSITE_TYPE: ${RCLONE_CONFIG_OFFSITE_TYPE:-}
+      RCLONE_CONFIG_OFFSITE_PROVIDER: ${RCLONE_CONFIG_OFFSITE_PROVIDER:-}
+      RCLONE_CONFIG_OFFSITE_ENDPOINT: ${RCLONE_CONFIG_OFFSITE_ENDPOINT:-}
+      RCLONE_CONFIG_OFFSITE_ACCESS_KEY_ID: ${RCLONE_CONFIG_OFFSITE_ACCESS_KEY_ID:-}
+      RCLONE_CONFIG_OFFSITE_SECRET_ACCESS_KEY: ${RCLONE_CONFIG_OFFSITE_SECRET_ACCESS_KEY:-}
+    volumes:
+      - calsync-data:/data            # state, mirrors, vdirsyncer status, tokens, manifests, local backup staging
+      - calsync-config:/config        # calsync.toml (seeded inert from the image on first start)
+    healthcheck:
+      test: ["CMD", "python", "-m", "calsync", "healthcheck"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "5"}
+volumes:
+  calsync-data:
+  calsync-config:

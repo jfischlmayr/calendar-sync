@@ -1,0 +1,39 @@
+name: Tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  tests:
+    if: ${{ github.event.repository.private == false }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CALSYNC_ALLOW_WRITES: "0"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y age rclone
+          python -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install -r requirements.lock radicale pytest
+      - name: Validate synthetic fixtures and Compose
+        run: |
+          python tests/fixtures/gen_synthetic.py --check
+          docker compose config --quiet
+      - name: Run tests against local test servers only
+        env:
+          HOME: ${{ runner.temp }}/test-home
+          VENV: ${{ runner.temp }}/venv
+        run: |
+          mkdir -p "$HOME"
+          export VDIRSYNCER_BIN="$VENV/bin/vdirsyncer" RADICALE_BIN="$VENV/bin/radicale" PYTHONPATH="src:tests" PYTHONDONTWRITEBYTECODE=1
+          "$VENV/bin/python" -m pytest -q -p no:cacheprovider tests

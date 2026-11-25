@@ -1,0 +1,2 @@
+# iCalendar fixtures must retain their RFC 5545 CRLF line endings byte-for-byte.
+*.ics -text whitespace=cr-at-eol,-blank-at-eol

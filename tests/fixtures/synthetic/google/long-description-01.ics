@@ -1,0 +1,33 @@
+BEGIN:VCALENDAR
+PRODID:-//Google Inc//Google Calendar 70.9054//EN
+VERSION:2.0
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Privat
+X-WR-TIMEZONE:Europe/Vienna
+BEGIN:VEVENT
+DTSTART:20261210T080000Z
+DTEND:20261210T090000Z
+DTSTAMP:20260615T160400Z
+UID:czowgdlfnldzx7psyhf76j7okh@google.com
+CLASS:PRIVATE
+CREATED:20260607T153600Z
+DESCRIPTION:Agenda für das Treffen: Punkt eins\, Budget und Zeitplan\; Pun
+ kt zwei\, Risiken & Maßnahmen. Bitte Unterlagen vorab lesen\, Fragen samm
+ eln.\nAgenda für das Treffen: Punkt eins\, Budget und Zeitplan\; Punkt zw
+ ei\, Risiken & Maßnahmen. Bitte Unterlagen vorab lesen\, Fragen sammeln.\
+ nAgenda für das Treffen: Punkt eins\, Budget und Zeitplan\; Punkt zwei\, 
+ Risiken & Maßnahmen. Bitte Unterlagen vorab lesen\, Fragen sammeln.\nAgen
+ da für das Treffe
+LAST-MODIFIED:20260615T160400Z
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:Lange Beschreibung (Google)
+TRANSP:OPAQUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:This is an event reminder
+TRIGGER:-P0DT0H30M0S
+END:VALARM
+END:VEVENT
+END:VCALENDAR

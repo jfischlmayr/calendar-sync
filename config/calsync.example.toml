@@ -1,0 +1,32 @@
+# calsync example configuration. Ships INERT: every pair is "disabled".
+# Copy to a path OUTSIDE the repository for real use; never commit a configuration containing real
+# calendar ids or addresses (the .gitignore excludes config/local*.toml and *.local.toml).
+#
+# Modes: disabled | mirror (read-only fetch of both sides + periodic read-only engine audit)
+#        | seed (engine writes ONLY Google, never iCloud) | live (engine writes both sides).
+# All writes go through the plan/apply engine (docs/ENGINE.md); vdirsyncer only fills the local read-only mirror.
+# See docs/ENABLING-WRITES.md for the order in which modes may be enabled. seed/live additionally need
+# CALSYNC_ALLOW_WRITES=1, a fresh verified backup and an approved plan, or the runner refuses to write.
+[global]
+interval_s = 300          # scheduler period (minimum 60)
+min_interval_s = 120      # per-pair rate limit
+max_backoff_s = 3600
+# YOUR OWN addresses on both providers. Required for any write mode: an event whose organiser or any
+# attendee is not in this list is a guest event and is never touched (RSVP / notifications).
+self_addresses = ["you@gmail.example", "you@icloud.example"]
+propagate_deletes = false # false: a deletion on one side is reported, never executed on the other
+max_creates_per_run = 25  # canary-sized batches; the rest follows on the next cycles
+max_updates_per_run = 25
+audit_interval_s = 3600   # read-only engine audit cadence for mirror-mode pairs
+max_delete_abs = 3        # max events that may vanish from one side per run before the run is blocked
+max_delete_pct = 10
+backup_max_age_h = 26
+icloud_url = "https://caldav.icloud.com/"
+
+# icloud_collection = last path segment of the iCloud calendar URL (see `calsync list-calendars`)
+# google_collection = Google calendar id (the e-mail-like id, or xxxx@group.calendar.google.com)
+[[pair]]
+name = "example_pair"           # lowercase letters, digits, underscore
+icloud_collection = "REPLACE_WITH_ICLOUD_COLLECTION_ID"
+google_collection = "REPLACE_WITH_GOOGLE_CALENDAR_ID"
+mode = "disabled"
